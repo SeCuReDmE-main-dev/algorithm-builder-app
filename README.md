@@ -1,5 +1,8 @@
 # Algorithm Builder App
 
+> **Development status.** This school tool is currently tagged **pre-alpha / in development**. External PRs are not evaluated for merge until the maintained tool reaches a stable, fully functional 100% classroom release after the pre-alpha phase. Issues and forks remain allowed, but official PR review is paused until that stability gate is met.
+
+
 A sophisticated algorithm visualization and development tool.
 
 > **Official school governance.** Algorithm Builder App is for training students and teachers to build, inspect, and reason about algorithms safely. It is not a tool for theft, fraud, bypass, abuse, or criminal automation. The maintained classroom route supports Codex/OpenAI or Antigravity/Gemini only. See [SCHOOL_TOOL_GOVERNANCE.md](SCHOOL_TOOL_GOVERNANCE.md) and [AGENTS.md](AGENTS.md).
@@ -81,3 +84,5 @@ docker-compose up -d
 
 This project is licensed under the Secured Educational License 2.0
 (`LicenseRef-SEL-2.0`). See `LICENSE`, `NOTICE`, and `DISCLAIMER`.
+
+
