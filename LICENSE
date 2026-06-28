@@ -1,11 +1,13 @@
 Secured Educational License 2.0
-LicenseRef-SEL-2.0
+Public name: SEL-2.0
+Local metadata reference: LicenseRef-SEL-2.0
 
 Copyright (c) 2026 Jean-Sebastien Beaulieu and SecuredMe.
 Jean-Sebastien Beaulieu ORCID: https://orcid.org/0009-0007-2904-0443
 
 This license governs software, documentation, examples, training material, and
-educational artifacts that expressly identify this license as
+educational artifacts that expressly identify this license as Secured
+Educational License 2.0, SEL-2.0, or the local metadata reference
 LicenseRef-SEL-2.0.
 
 1. Educational Open Use
@@ -79,6 +81,7 @@ DISTRIBUTION, OR MISUSE OF THE LICENSED MATERIAL.
 
 10. License Identifier Status
 
-LicenseRef-SEL-2.0 is a custom license identifier. It is not currently an
-OSI-approved license and is not currently listed in the SPDX License List. When
-using SPDX-compatible metadata, include the full license text with the project.
+SEL-2.0 is a custom SecuredMe license. It is not currently an OSI-approved
+license and is not currently listed in the SPDX License List. LicenseRef-SEL-2.0
+is a local metadata reference, not a claim of SPDX or OSI approval. When using
+SPDX-compatible metadata, include this full license text with the project.
