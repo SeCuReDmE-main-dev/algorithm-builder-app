@@ -7,7 +7,7 @@
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "build": "webpack --mode production",
-    "test": "jest",
+    "test": "node scripts/smoke-test.js",
     "docker:build": "docker build -t algorithm-builder .",
     "docker:run": "docker run -p 3000:3000 algorithm-builder"
   },

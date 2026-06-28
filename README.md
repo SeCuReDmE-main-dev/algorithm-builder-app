@@ -4,6 +4,8 @@ A sophisticated algorithm visualization and development tool.
 
 > **Official school governance.** Algorithm Builder App is for training students and teachers to build, inspect, and reason about algorithms safely. It is not a tool for theft, fraud, bypass, abuse, or criminal automation. The maintained classroom route supports Codex/OpenAI or Antigravity/Gemini only. See [SCHOOL_TOOL_GOVERNANCE.md](SCHOOL_TOOL_GOVERNANCE.md) and [AGENTS.md](AGENTS.md).
 
+> **License.** This project uses the Secured Educational License 2.0 (`LicenseRef-SEL-2.0`). See [LICENSE](LICENSE), [NOTICE](NOTICE), and [DISCLAIMER](DISCLAIMER).
+
 ## Features
 
 - **Core Functionality**
