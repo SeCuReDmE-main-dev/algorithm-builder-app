@@ -1,4 +1,3 @@
-require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const { Pool } = require('pg');
@@ -10,7 +9,7 @@ import App from './App';
 import { create, all } from 'mathjs';
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = 3000;
 
 // Database setup
 const pool = new Pool({
