@@ -4,6 +4,14 @@
 
 **Attribution:** Jean-Sebastien Beaulieu · [ORCID 0009-0007-2904-0443](https://orcid.org/0009-0007-2904-0443) · [SecuredMe](https://securedme.ca) · [Algorithm Builder](https://algorithm-builder.securedme.ca)
 
+<!-- SECUREDME-SUITE-BADGES:START -->
+[![Issues](https://img.shields.io/github/issues/SeCuReDmE-main-dev/algorithm-builder-app?color=161B6A)](https://github.com/SeCuReDmE-main-dev/algorithm-builder-app/issues)
+[![Milestones](https://img.shields.io/badge/milestones-M0--M7-23B8FF)](https://github.com/SeCuReDmE-main-dev/algorithm-builder-app/milestones)
+[![Project Board](https://img.shields.io/badge/project-kanban-6F42FF)](https://github.com/users/SeCuReDmE-main-dev/projects/3)
+[![Branch](https://img.shields.io/badge/branch-icebreaker-0E7490)](https://github.com/SeCuReDmE-main-dev/algorithm-builder-app/tree/icebreaker)
+<!-- SECUREDME-SUITE-BADGES:END -->
+
+
 
 ## School Authentication And Secret Boundary
 This repository is a small SecuredMe school tool. Official classroom use must not require `.env` files, API keys, raw tokens, or local model secrets. Student and teacher workflows must use Codex/OpenAI or Antigravity/Gemini through browser WebAuth, fingerprinted session approval, and encrypted local session records when authentication is needed.
@@ -96,6 +104,7 @@ docker-compose up -d
 
 This project is licensed under the Secured Educational License 2.0
 (SEL-2.0). See `LICENSE`, `NOTICE`, and `DISCLAIMER`.
+
 
 
 
