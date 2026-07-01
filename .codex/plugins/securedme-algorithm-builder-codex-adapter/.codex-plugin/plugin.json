@@ -1,0 +1,37 @@
+{
+  "name": "securedme-algorithm-builder-codex-adapter",
+  "version": "0.1.0",
+  "description": "Algorithm Builder app adapter.",
+  "author": {
+    "name": "SecuredMe",
+    "url": "https://securedme.ca"
+  },
+  "homepage": "https://algorithm-builder.securedme.ca",
+  "license": "MIT",
+  "keywords": [
+    "securedme",
+    "education",
+    "webauth",
+    "token-governor"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Algorithm Builder Codex Adapter",
+    "shortDescription": "Algorithm Builder app adapter.",
+    "longDescription": "Repo-local Codex adapter for Algorithm Builder. It keeps the app in pre-alpha, uses browser-authenticated OpenAI/Codex workflows, forbids copied secrets, and prepares future Token Governor and MCP integration.",
+    "developerName": "SecuredMe",
+    "category": "Education",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Adapter"
+    ],
+    "websiteURL": "https://algorithm-builder.securedme.ca",
+    "defaultPrompt": [
+      "Open the Algorithm Builder adapter context.",
+      "Check WebAuth readiness without secrets.",
+      "Plan a Token Governor handoff."
+    ]
+  },
+  "repository": "https://github.com/SeCuReDmE-main-dev/algorithm-builder-app"
+}
