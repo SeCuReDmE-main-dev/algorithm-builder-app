@@ -6,6 +6,7 @@
     "name": "Algorithm Builder",
     "path": "algorithm-builder-app",
     "canonical_domain": "algorithm-builder.securedme.ca",
+    "canonical_route": "https://securedme.ca/education/apps/algorithm-builder/",
     "status": "pre-alpha"
   },
   "platform": "antigravity",
