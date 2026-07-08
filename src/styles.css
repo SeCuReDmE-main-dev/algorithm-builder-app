@@ -7,6 +7,12 @@
     border-right: 1px solid #ccc;
 }
 
+#components {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
 #canvas {
     width: 75%;
     float: right;
@@ -23,7 +29,8 @@
 
 /* Styles for algorithm components */
 .component {
-    width: 100px;
+    width: 100%;
+    max-width: 160px;
     height: 50px;
     background-color: #e0e0e0;
     border: 1px solid #ccc;
@@ -31,7 +38,31 @@
     text-align: center;
     line-height: 50px;
     cursor: pointer;
+    position: relative;
+}
+
+#algorithm-canvas .component {
+    width: 100px;
     position: absolute;
+}
+
+#components input,
+#components button,
+#components p {
+    position: relative;
+    z-index: 1;
+}
+
+#components input,
+#components button {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 180px;
+}
+
+#algoquest-qbit-status {
+    margin: 0;
+    line-height: 1.35;
 }
 
 .component.dragging {

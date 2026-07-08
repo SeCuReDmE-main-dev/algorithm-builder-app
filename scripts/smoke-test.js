@@ -13,6 +13,7 @@ const requiredFiles = [
   "DISCLAIMER",
   "src/index.js",
   "src/index.html",
+  "src/algoquestQbitAdapter.js",
 ];
 
 const missing = requiredFiles.filter((file) => !fs.existsSync(path.join(root, file)));
@@ -30,6 +31,31 @@ for (const phrase of ["Codex/OpenAI", "Antigravity/Gemini", "LicenseRef-SEL-2.0"
     console.error(`Missing governance phrase: ${phrase}`);
     process.exit(1);
   }
+}
+
+const adapter = fs.readFileSync(path.join(root, "src/algoquestQbitAdapter.js"), "utf8");
+const components = fs.readFileSync(path.join(root, "src/components.js"), "utf8");
+const index = fs.readFileSync(path.join(root, "src/index.html"), "utf8");
+
+for (const phrase of [
+  "securedme.education.algoquest.outbox.v1",
+  "emitAlgoQuestLearningEvent",
+  "raw_secret_stored",
+]) {
+  if (!adapter.includes(phrase)) {
+    console.error(`Missing AlgoQuest adapter phrase: ${phrase}`);
+    process.exit(1);
+  }
+}
+
+if (!components.includes("Send to AlgoQuest") || !components.includes("emitAlgoQuestComponentEvent")) {
+  console.error("Algorithm Builder does not expose the AlgoQuest user action hook.");
+  process.exit(1);
+}
+
+if (!index.includes("algoquestQbitAdapter.js")) {
+  console.error("Algorithm Builder index.html does not load the AlgoQuest adapter before components.js.");
+  process.exit(1);
 }
 
 console.log("algorithm-builder-app smoke test passed");
