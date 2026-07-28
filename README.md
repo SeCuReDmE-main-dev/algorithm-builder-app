@@ -8,7 +8,7 @@
 [![Issues](https://img.shields.io/github/issues/SeCuReDmE-main-dev/algorithm-builder-app?color=161B6A)](https://github.com/SeCuReDmE-main-dev/algorithm-builder-app/issues)
 [![Milestones](https://img.shields.io/badge/milestones-M0--M7-23B8FF)](https://github.com/SeCuReDmE-main-dev/algorithm-builder-app/milestones)
 [![Project Board](https://img.shields.io/badge/project-kanban-6F42FF)](https://github.com/users/SeCuReDmE-main-dev/projects/3)
-[![Branch](https://img.shields.io/badge/branch-icebreaker-0E7490)](https://github.com/SeCuReDmE-main-dev/algorithm-builder-app/tree/icebreaker)
+[![Branch](https://img.shields.io/badge/branch-main-0E7490)](https://github.com/SeCuReDmE-main-dev/algorithm-builder-app/tree/main)
 <!-- SECUREDME-SUITE-BADGES:END -->
 
 <!-- SECUREDME-STARTUP-SUPPORT:START -->
