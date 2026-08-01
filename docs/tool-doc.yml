@@ -1,0 +1,35 @@
+schema: securedme.tool-doc.v2
+slug: algorithm-builder
+title: Algorithm Builder
+version: 1.0.0
+status: in-development
+license: LicenseRef-SEL-2.0
+summary: A visual workspace for composing, inspecting, and explaining algorithm structures.
+identity:
+  logo: docs/assets/education/education-icon.png
+  family: Algorithm Builder
+runtime:
+  type: browser-app
+  availability: pending
+  public_url: https://algorithm-builder.securedme.ca
+source:
+  repository: https://github.com/SeCuReDmE-main-dev/algorithm-builder-app
+  issues: https://github.com/SeCuReDmE-main-dev/algorithm-builder-app/issues
+documentation:
+  public_root: docs/public
+  source_language: en
+  languages:
+  - en
+  - fr
+  - es
+commands:
+  install:
+  - npm install
+  start:
+  - npm start
+  test:
+  - npm test
+boundaries:
+  authority: The builder supports explanation and experimentation; generated structures
+    remain subject to code review and tests.
+  human_review_required: true
