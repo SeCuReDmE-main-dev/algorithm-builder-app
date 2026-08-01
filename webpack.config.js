@@ -6,6 +6,7 @@ module.exports = {
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist'),
+    clean: true,
   },
   module: {
     rules: [
@@ -27,15 +28,7 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './public/index.html',
+      template: './src/index.html',
     }),
   ],
-  resolve: {
-    fallback: {
-      "fs": false,
-      "net": false,
-      "tls": false,
-      "dns": false
-    }
-  }
 };

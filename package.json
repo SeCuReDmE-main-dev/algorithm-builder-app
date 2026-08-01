@@ -2,14 +2,18 @@
   "name": "algorithm-builder-app",
   "version": "1.0.0",
   "description": "Interactive Algorithm Learning Platform",
-  "main": "src/index.js",
+  "main": "server/index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js",
+    "start": "node server/index.js",
+    "dev": "nodemon server/index.js",
     "build": "webpack --mode production",
     "test": "node scripts/smoke-test.js",
     "docker:build": "docker build -t algorithm-builder .",
-    "docker:run": "docker run -p 3000:3000 algorithm-builder"
+    "docker:run": "docker run -p 3000:3000 algorithm-builder",
+    "cpai:start": "powershell -NoProfile -ExecutionPolicy Bypass -File infra/codeproject-ai/start.ps1",
+    "cpai:health": "node infra/codeproject-ai/client.mjs health",
+    "cpai:mesh": "node infra/codeproject-ai/client.mjs mesh",
+    "cpai:stop": "powershell -NoProfile -ExecutionPolicy Bypass -File infra/codeproject-ai/stop.ps1"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
