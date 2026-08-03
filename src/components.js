@@ -1,24 +1,40 @@
 const componentsLibrary = [
     {
         id: 'component-1',
-        type: 'loop',
+        type: 'character-sheet',
         properties: {
-            iterations: 10
+            role: 'apprenti-des-deux-horizons',
+            inventory: []
         }
     },
     {
         id: 'component-2',
-        type: 'conditional',
+        type: 'deterministic-die',
         properties: {
-            condition: 'x > 5'
+            sides: 6
         }
     },
     {
         id: 'component-3',
-        type: 'function',
+        type: 'force-block',
         properties: {
-            name: 'myFunction',
-            parameters: ['x', 'y']
+            direction: 'east',
+            intensity: 3
+        }
+    },
+    {
+        id: 'component-4',
+        type: 'trajectory-lab',
+        properties: {
+            origin: 'tower',
+            bounds: 10
+        }
+    },
+    {
+        id: 'component-5',
+        type: 'ascii-sky-map',
+        properties: {
+            width: 50
         }
     }
 ];
@@ -59,7 +75,7 @@ async function emitAlgoQuestComponentEvent() {
     return adapter.emitAlgorithmArtifactReceipt(latestComponent, missionContext || {
         mission_id: 'mage-two-horizons.primary-5-6.fr-CA.1',
         hero_book_id: 'mage-two-horizons',
-        capability_refs: ['force-block', 'trajectory-lab']
+        capability_refs: [latestComponent.type]
     });
 }
 
