@@ -65,6 +65,38 @@
     line-height: 1.35;
 }
 
+#algoquest-qbit-receipt {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 260px;
+    min-height: 180px;
+    resize: vertical;
+    border: 1px solid #94a3b8;
+    border-radius: 4px;
+    padding: 8px;
+    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    font-size: 11px;
+    line-height: 1.35;
+    color: #0f172a;
+    background: #f8fafc;
+}
+
+#algoquest-mission-envelope {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 260px;
+    min-height: 140px;
+    resize: vertical;
+    border: 1px solid #64748b;
+    border-radius: 4px;
+    padding: 8px;
+    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    font-size: 11px;
+    line-height: 1.35;
+    color: #172554;
+    background: #eff6ff;
+}
+
 .component.dragging {
     opacity: 0.5;
 }

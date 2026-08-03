@@ -61,6 +61,7 @@ plugins:
 - search
 nav:
 - Home: index.md
+- AlgoQuest Hero Books Adapter: algoquest-hero-books-adapter.md
 - Accessibility:
   - Edge User Console: accessibility/edge-user-console.md
   - Neurodivergent Comfort: accessibility/neurodivergent-comfort.md

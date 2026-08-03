@@ -46,14 +46,21 @@ function searchComponents(query) {
     );
 }
 
-function emitAlgoQuestComponentEvent() {
+async function emitAlgoQuestComponentEvent() {
     const adapter = window.AlgorithmBuilderAlgoQuestQbitAdapter;
     if (!adapter) {
         return null;
     }
     const latestComponent = componentsLibrary[componentsLibrary.length - 1];
-    const artifactRef = `algorithm-builder:component:${latestComponent.id}`;
-    return adapter.emitAlgoQuestLearningEvent(artifactRef, 93);
+    const importedMission = adapter.readMissionEnvelopeInbox && adapter.readMissionEnvelopeInbox();
+    const missionContext = importedMission
+        ? adapter.contextFromMissionEnvelope(importedMission.envelope)
+        : null;
+    return adapter.emitAlgorithmArtifactReceipt(latestComponent, missionContext || {
+        mission_id: 'mage-two-horizons.primary-5-6.fr-CA.1',
+        hero_book_id: 'mage-two-horizons',
+        capability_refs: ['force-block', 'trajectory-lab']
+    });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -85,10 +92,48 @@ document.addEventListener('DOMContentLoaded', () => {
     algoQuestStatus.textContent = 'AlgoQuest event pending';
     componentsContainer.appendChild(algoQuestStatus);
 
-    algoQuestButton.addEventListener('click', () => {
-        const event = emitAlgoQuestComponentEvent();
+    const missionInput = document.createElement('textarea');
+    missionInput.id = 'algoquest-mission-envelope';
+    missionInput.rows = 8;
+    missionInput.placeholder = 'Paste AlgoQuest MissionEnvelope JSON here.';
+    componentsContainer.appendChild(missionInput);
+
+    const missionImportButton = document.createElement('button');
+    missionImportButton.type = 'button';
+    missionImportButton.id = 'algoquest-mission-import';
+    missionImportButton.textContent = 'Import Mission';
+    componentsContainer.appendChild(missionImportButton);
+
+    const algoQuestReceipt = document.createElement('textarea');
+    algoQuestReceipt.id = 'algoquest-qbit-receipt';
+    algoQuestReceipt.readOnly = true;
+    algoQuestReceipt.rows = 10;
+    algoQuestReceipt.placeholder = 'Validated AlgoQuest receipt JSON appears here.';
+    componentsContainer.appendChild(algoQuestReceipt);
+
+    missionImportButton.addEventListener('click', async () => {
+        const adapter = window.AlgorithmBuilderAlgoQuestQbitAdapter;
+        if (!adapter) {
+            algoQuestStatus.textContent = 'AlgoQuest adapter unavailable';
+            return;
+        }
+        try {
+            const envelope = JSON.parse(missionInput.value);
+            const receipt = await adapter.importMissionEnvelope(envelope);
+            algoQuestStatus.textContent = receipt.status === 'accepted'
+                ? `Mission imported: ${receipt.mission_id}`
+                : `Mission rejected: ${receipt.errors.join(', ') || receipt.reason}`;
+        } catch (error) {
+            algoQuestStatus.textContent = 'Mission rejected: invalid JSON';
+        }
+    });
+
+    algoQuestButton.addEventListener('click', async () => {
+        algoQuestStatus.textContent = 'AlgoQuest receipt building...';
+        const event = await emitAlgoQuestComponentEvent();
+        algoQuestReceipt.value = event ? JSON.stringify(event, null, 2) : '';
         algoQuestStatus.textContent = event
-            ? `AlgoQuest event ready: ${event.artifact_ref}`
+            ? `AlgoQuest receipt ready: ${event.receipt_id}`
             : 'AlgoQuest adapter unavailable';
     });
 
@@ -108,6 +153,9 @@ document.addEventListener('DOMContentLoaded', () => {
         componentsContainer.appendChild(searchInput);
         componentsContainer.appendChild(algoQuestButton);
         componentsContainer.appendChild(algoQuestStatus);
+        componentsContainer.appendChild(missionInput);
+        componentsContainer.appendChild(missionImportButton);
+        componentsContainer.appendChild(algoQuestReceipt);
     });
 });
 
