@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "AlgoQuest Arcane Forge",
+  "version": "0.1.0",
+  "description": "A calm, persistent Mage First-Proof builder for AlgoQuest and Colab.",
+  "minimum_chrome_version": "114",
+  "permissions": ["sidePanel", "identity", "storage", "downloads", "tabs"],
+  "host_permissions": [
+    "http://127.0.0.1/*",
+    "http://localhost/*",
+    "https://*.securedme.ca/*",
+    "https://*.auth0.com/*"
+  ],
+  "background": {
+    "service_worker": "serviceWorker.js"
+  },
+  "action": {
+    "default_title": "Open Arcane Forge"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://127.0.0.1/*",
+        "http://localhost/*",
+        "https://algoquest.securedme.ca/*"
+      ],
+      "js": ["contentBridge.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

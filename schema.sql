@@ -41,3 +41,24 @@ CREATE TABLE user_progress (
     last_accessed TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(user_id, algorithm_id)
 );
+
+-- Mage First-Proof broker state. Identity is stored only as a one-way subject reference.
+CREATE TABLE IF NOT EXISTS mage_first_proof_runs (
+    run_id TEXT PRIMARY KEY,
+    subject_ref TEXT NOT NULL,
+    idempotency_key TEXT NOT NULL,
+    mission JSONB NOT NULL,
+    learner_profile JSONB NOT NULL,
+    status TEXT NOT NULL,
+    attempt INTEGER NOT NULL DEFAULT 1,
+    artifact JSONB,
+    artifact_digest TEXT,
+    callback_hash TEXT,
+    callback_expires_at TIMESTAMPTZ,
+    callback_used_at TIMESTAMPTZ,
+    execution_input_digest TEXT,
+    execution_receipt JSONB,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(subject_ref, idempotency_key)
+);

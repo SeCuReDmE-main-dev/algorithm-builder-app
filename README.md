@@ -1,5 +1,16 @@
 # Algorithm Builder App
 
+## Mage First-Proof side panel
+
+The first complete mechanism is a Chromium 114+ Manifest V3 side panel. AlgoQuest owns the mission and progression decision; the panel builds a deterministic typed card program; the authenticated broker admits the artifact and generates a run-bound notebook; Colab returns bounded execution evidence to AlgoQuest through the extension. The successful path does not require JSON copy/paste and the extension never reads the Colab DOM.
+
+1. Configure Auth0, Postgres, the public HTTPS broker URL, and broker signing values using `.env.example` as the key list. Do not place real values in source control.
+2. Run `npm run build`. The unpacked extension is generated in `dist/extension`.
+3. Set `AUTH0_DOMAIN`, `AUTH0_CLIENT_ID`, `AUTH0_AUDIENCE`, and `BROKER_BASE_URL` while building the extension, then load `dist/extension` through Chromium's **Load unpacked** control.
+4. Run `npm test` for deterministic engine, digest, broker, local notebook parity, and MV3 permission checks.
+
+Authentication fails closed when Auth0 is absent. Tokens remain in `chrome.storage.session`; the broker stores only a one-way learner subject reference and the hash of the short-lived callback capability. An explicit JSON download/import remains the recovery path; local verification is labelled local evidence and never impersonates Colab evidence.
+
 <!-- SECUREDME-CPAI-MESH:START -->
 <p align="center">
   <img alt="CodeProject.AI Server embedded mesh node" src="https://img.shields.io/badge/CodeProject.AI%20Server-Embedded%20Mesh%20Node-1F6FEB?style=for-the-badge" />
