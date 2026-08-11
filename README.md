@@ -1,5 +1,11 @@
 # Algorithm Builder App
 
+<!-- SECUREDME-ZENODO:START -->
+<p align="center">
+  <a href="https://zenodo.org/badge/latestdoi/911500012"><img alt="DOI" src="https://zenodo.org/badge/911500012.svg" /></a>
+</p>
+<!-- SECUREDME-ZENODO:END -->
+
 ## Mage First-Proof side panel
 
 The first complete mechanism is a Chromium 114+ Manifest V3 side panel. AlgoQuest owns the mission and progression decision; the panel builds a deterministic typed card program; the authenticated broker admits the artifact and generates a run-bound notebook; Colab returns bounded execution evidence to AlgoQuest through the extension. The successful path does not require JSON copy/paste and the extension never reads the Colab DOM.
