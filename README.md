@@ -73,7 +73,7 @@ Algorithm Builder App is in **pre-alpha — active public development** as part 
 - Algorithm Builder acts as the forge: character sheet, deterministic die, inventory surface, algorithm construction surface, and artifact receipt producer.
 - Builder can validate a pasted `MissionEnvelope.v1` from AlgoQuest and emit an `AlgorithmArtifactReceipt.v1` back to AlgoQuest.
 - Builder must not select Hero Books prompts, unlock milestones, issue `KnowledgeToken`, decide mastery, diagnose a learner, or store hidden learner signals.
-- The live WebAuth bridge is not implemented yet. Until it exists, the cross-tool proof uses explicit copy/paste JSON receipts.
+- The MV3 service worker and broker-side Auth0/OIDC-PKCE bindings are implemented and covered by local contract tests. A public Auth0 tenant, HTTPS broker, PostgreSQL runtime, and live Chromium/Colab acceptance are still required before this can be described as a deployed school login. JSON download/import remains the recovery path, not the successful-path transport.
 
 The current proof is contract-level and local. It is not a school alpha claim.
 
@@ -119,7 +119,7 @@ Current local storage keys:
 
 Current live blockers:
 
-- no live Builder WebAuth broker
+- no deployed public Builder broker or completed live Auth0/Chromium/Colab acceptance yet
 - no provider key or secret allowed in browser storage
 - no hidden authority handoff from Builder to AlgoQuest
 - no real student, teacher, school, or minor workflow approved

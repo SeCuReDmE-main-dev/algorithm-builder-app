@@ -1,12 +1,14 @@
 # Architecture
 
-A React client and Express service coordinate visual graph editing, persistence, and inspectable algorithm structure.
+A Chromium MV3 side panel, renderer-independent card engine, extension service worker, and Express/Postgres broker coordinate one bounded Mage artifact.
 
 ## Data flow
 
 ```text
-Reviewed input -> typed boundary -> tool mechanism -> reviewable artifact -> human decision
+AlgoQuest MissionEnvelope.v2 -> typed card AST -> local tests -> admitted artifact -> generated notebook -> broker-attested execution receipt -> AlgoQuest
 ```
+
+The extension uses service-worker/content-script messaging and never reads the Colab DOM. Auth0 access tokens stay in `chrome.storage.session`; only a hashed learner reference and the hash of the short-lived callback capability are stored by the broker.
 
 ## Provenance
 

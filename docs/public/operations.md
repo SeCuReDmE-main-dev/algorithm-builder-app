@@ -27,3 +27,5 @@ Read `CONTRIBUTING.md`, `SECURITY.md`, `SAFETY.md`, and the repository license w
 ## Releases
 
 The current public documentation describes `1.0.0` with status `in-development`. Consult the repository history and release notes for changes.
+
+Build with `npm run build` to generate `dist/extension`, then run `npm test`. Production deployment additionally requires Auth0 issuer/audience values, PostgreSQL, a strong receipt-signing key, a separate subject-hash pepper, allowed origins, and a public HTTPS broker URL.
