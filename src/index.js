@@ -3,3 +3,6 @@ import './algoquestQbitAdapter.js';
 import './components.js';
 import './accessibility.js';
 import './onboarding.js';
+import { registerBuilderWebMcp } from './webmcpTools.js';
+
+registerBuilderWebMcp();

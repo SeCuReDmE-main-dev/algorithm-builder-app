@@ -15,6 +15,9 @@ import { TestRunCard } from '../components/cards/TestRunCard';
 import { ReceiptCard } from '../components/cards/ReceiptCard';
 import { buildAlgorithmArtifactReceiptV2, validateAlgorithmArtifactReceiptV2 } from '../engine/mageFirstProof';
 import { learningRunStore, useLearningRunStore } from '../store/useLearningRunStore';
+import { registerBuilderWebMcp } from '../webmcpTools';
+
+registerBuilderWebMcp();
 
 const CARD_COMPONENTS = {
   'character-sheet': CharacterSheetCard,

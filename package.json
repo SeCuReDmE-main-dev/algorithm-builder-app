@@ -7,7 +7,7 @@
     "start": "node server/index.js",
     "dev": "nodemon server/index.js",
     "build": "webpack --mode production && node scripts/build-extension.js",
-    "test": "node scripts/smoke-test.js && node scripts/mage-first-proof-test.js && node scripts/broker-test.js && node scripts/extension-static-test.js",
+    "test": "node scripts/smoke-test.js && node scripts/mage-first-proof-test.js && node scripts/broker-test.js && node scripts/extension-static-test.js && node scripts/webmcp-static-test.js",
     "docker:build": "docker build -t algorithm-builder .",
     "docker:run": "docker run -p 3000:3000 algorithm-builder",
     "cpai:start": "powershell -NoProfile -ExecutionPolicy Bypass -File infra/codeproject-ai/start.ps1",
