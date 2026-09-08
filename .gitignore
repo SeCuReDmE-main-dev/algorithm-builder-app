@@ -2,3 +2,6 @@ site/
 node_modules/
 node_modules.a1-incomplete/
 dist/
+.env
+.env.*
+!.env.example
