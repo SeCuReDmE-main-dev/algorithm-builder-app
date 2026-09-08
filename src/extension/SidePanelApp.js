@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { DndContext, KeyboardSensor, PointerSensor, closestCenter, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, arrayMove, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { BuilderSidePanel } from '../components/ui/BuilderSidePanel';
+import { HeroSheet } from '../../packages/hero-sheet/src/index.js';
 import { PlaymatCanvas, PlaymatSlot } from '../components/ui/PlaymatCanvas';
 import { CharacterSheetCard } from '../components/cards/CharacterSheetCard';
 import { DeterministicDieCard } from '../components/cards/DeterministicDieCard';
@@ -16,6 +16,8 @@ import { ReceiptCard } from '../components/cards/ReceiptCard';
 import { buildAlgorithmArtifactReceiptV2, validateAlgorithmArtifactReceiptV2 } from '../engine/mageFirstProof';
 import { learningRunStore, useLearningRunStore } from '../store/useLearningRunStore';
 import { registerBuilderWebMcp } from '../webmcpTools';
+import { createGameCommandOutbox } from './gameCommandOutbox';
+import './sidepanel.css';
 
 registerBuilderWebMcp();
 
@@ -62,9 +64,15 @@ async function extensionCommand(message) {
   return response.data;
 }
 
+const gameCommandOutbox = createGameCommandOutbox({
+  storageArea: chrome.storage.local,
+  send: (command) => extensionCommand({ type: 'GAME_COMMAND', command }),
+});
+
 function SidePanelRuntime() {
   const state = useLearningRunStore();
   const [runtime, setRuntime] = useState({ authenticated: false, run: null, calmMessage: 'Ready when you are.' });
+  const [gameProjection, setGameProjection] = useState(null);
   const [busy, setBusy] = useState(false);
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }));
 
@@ -75,8 +83,21 @@ function SidePanelRuntime() {
       if (next.profile) learningRunStore.getState().setProfile(next.profile);
       if (next.run?.execution_receipt) learningRunStore.getState().setColabReceipt(next.run.execution_receipt);
     }).catch((error) => learningRunStore.getState().setBroker({ status: 'offline', message: error.message }));
+    extensionCommand({ type: 'GET_ACTIVE_GAME_CHANNEL' }).then(async (channel) => {
+      const projection = channel?.projection || null;
+      setGameProjection(projection);
+      if (projection?.connection === 'connected') await gameCommandOutbox.replay(projection.run_id, (result) => {
+        if (result?.projection) setGameProjection(result.projection);
+      });
+    }).catch(() => undefined);
     const listener = (message) => {
       if (message.type === 'RUNTIME_STATE_CHANGED') setRuntime(message.state);
+      if (message.type === 'GAME_CHANNEL_CHANGED' && message.channel?.projection) {
+        setGameProjection(message.channel.projection);
+        if (message.channel.projection.connection === 'connected') gameCommandOutbox.replay(message.channel.projection.run_id, (result) => {
+          if (result?.projection) setGameProjection(result.projection);
+        }).catch(() => undefined);
+      }
     };
     chrome.runtime.onMessage.addListener(listener);
     return () => chrome.runtime.onMessage.removeListener(listener);
@@ -108,6 +129,20 @@ function SidePanelRuntime() {
     learningRunStore.getState().setArtifactReceipt(artifact);
     const next = await extensionCommand({ type: 'ARTIFACT_SUBMIT', artifact });
     setRuntime(next);
+  };
+
+  const sendGameCommand = async (type, payload = {}) => {
+    const runId = gameProjection?.run_id;
+    if (!runId || gameProjection?.connection !== 'connected') throw new Error('Rouvre la planche AlgoQuest pour poursuivre cette action.');
+    const command = await gameCommandOutbox.queue(runId, type, payload);
+    const result = await gameCommandOutbox.deliver(runId, command);
+    if (result?.projection) setGameProjection(result.projection);
+    return result;
+  };
+
+  const selectActiveGame = async () => {
+    const channel = await extensionCommand({ type: 'SELECT_ACTIVE_GAME_CHANNEL' });
+    setGameProjection(channel?.projection || null);
   };
 
   const updateCard = (type, properties) => {
@@ -151,7 +186,7 @@ function SidePanelRuntime() {
       {runtime.run && <button type="button" disabled={busy} onClick={() => run(async () => { learningRunStore.getState().setStage('Return'); return extensionCommand({ type: 'RUN_STATUS', run_id: runtime.run.run_id }); })}>Check return</button>}
       {runtime.run && <button type="button" disabled={busy} onClick={() => run(() => extensionCommand({ type: 'RUN_RETRY', run_id: runtime.run.run_id }))}>Retry without penalty</button>}
     </div>
-  ), [busy, runtime, state.artifactReceipt, state.broker.message, state.mission]);
+  ), [busy, runtime, state.artifactReceipt, state.broker.message, state.mission, state.cards, state.past.length, state.future.length]);
 
   const playmat = (
     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
@@ -163,7 +198,8 @@ function SidePanelRuntime() {
     </DndContext>
   );
 
-  return <BuilderSidePanel activeStage={state.activeStage} deckPalette={<span>Eight governed Mage cards</span>} playmat={playmat} actionArea={actions} missionTitle={state.mission?.mission_title || 'Mage First-Proof'} missionText={state.mission?.objective || 'Open AlgoQuest to receive the current mission.'} />;
+  const forge = <div className="builder-forge-host"><div className="builder-forge-host__deck"><b>Actions équipées</b><span>Profil · dé · force · trajectoire · comparaison · limite · test · reçu</span><button type="button" disabled={busy} onClick={() => run(selectActiveGame)}>Lier à l’onglet AlgoQuest actif</button></div>{playmat}<div className="builder-forge-host__actions">{actions}</div></div>;
+  return <HeroSheet projection={gameProjection} onCommand={sendGameCommand} forge={forge} mode="extension" busy={busy} error={state.broker.status === 'offline' ? state.broker.message : null} title="Grimoire & Forge" />;
 }
 
 const root = document.getElementById('sidepanel-root');

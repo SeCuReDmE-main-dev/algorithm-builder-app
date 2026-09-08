@@ -1,10 +1,18 @@
 const fs = require('fs');
 const path = require('path');
+require('../server/loadSuiteEnv');
 
 const root = path.resolve(__dirname, '..');
 const source = path.join(root, 'extension');
 const target = path.join(root, 'dist', 'extension');
 fs.mkdirSync(target, { recursive: true });
+
+const panelHtmlPath = path.join(target, 'sidepanel.html');
+if (fs.existsSync(panelHtmlPath)) {
+  const panelHtml = fs.readFileSync(panelHtmlPath, 'utf8')
+    .replaceAll('../extension/sidepanel.js', 'sidepanel.js');
+  fs.writeFileSync(panelHtmlPath, panelHtml, 'utf8');
+}
 
 for (const filename of ['manifest.json', 'serviceWorker.js', 'contentBridge.js']) {
   fs.copyFileSync(path.join(source, filename), path.join(target, filename));

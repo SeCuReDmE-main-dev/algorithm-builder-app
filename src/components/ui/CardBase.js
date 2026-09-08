@@ -40,7 +40,7 @@ export const CardBase = ({
     <div 
       ref={setNodeRef}
       style={baseStyle}
-      className={`rounded-lg overflow-hidden flex flex-col w-64 min-h-[140px] relative ${className}`}
+      className={`builder-card rounded-lg overflow-hidden flex flex-col w-64 min-h-[140px] relative ${className}`}
       {...attributes}
       {...listeners}
     >
@@ -52,14 +52,14 @@ export const CardBase = ({
         />
       )}
 
-      <div style={headerStyle} className="px-3 py-2 flex items-center justify-between font-bold text-sm tracking-wider uppercase">
+      <div style={headerStyle} className="builder-card__header px-3 py-2 flex items-center justify-between font-bold text-sm tracking-wider uppercase">
         <span className="flex items-center gap-2">
           {icon && <span>{icon}</span>}
           {title}
         </span>
       </div>
       
-      <div className="p-3 flex-1 flex flex-col gap-2 text-sm text-slate-300">
+      <div className="builder-card__body p-3 flex-1 flex flex-col gap-2 text-sm text-slate-300">
         {children}
       </div>
     </div>

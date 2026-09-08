@@ -16,7 +16,7 @@ export const PlaymatSlot = ({ id, children }) => {
   };
 
   return (
-    <div ref={setNodeRef} style={slotStyle} className="p-4 flex flex-col gap-4 items-center justify-center relative">
+    <div ref={setNodeRef} style={slotStyle} className="builder-playmat__slot p-4 flex flex-col gap-4 items-center justify-center relative">
       {!children || children.length === 0 ? (
         <span className="text-slate-500 uppercase tracking-widest text-xs font-bold pointer-events-none">
           Drop Card Here
@@ -34,7 +34,7 @@ export const PlaymatSlot = ({ id, children }) => {
  */
 export const PlaymatCanvas = ({ activeCards, children }) => {
   return (
-    <div className="w-full flex-1 flex flex-col p-6 overflow-y-auto relative bg-[#050816]">
+    <div className="builder-playmat w-full flex-1 flex flex-col p-6 overflow-y-auto relative bg-[#050816]">
       {/* Background Star Grid */}
       <div 
         className="absolute inset-0 pointer-events-none opacity-20"
@@ -44,8 +44,8 @@ export const PlaymatCanvas = ({ activeCards, children }) => {
         }}
       />
       
-      <div className="relative z-10 max-w-2xl mx-auto w-full flex flex-col gap-6">
-        <div className="text-center mb-4">
+      <div className="builder-playmat__content relative z-10 max-w-2xl mx-auto w-full flex flex-col gap-6">
+        <div className="builder-playmat__title text-center mb-4">
           <h2 className="text-2xl font-black text-white tracking-wide uppercase" style={{ textShadow: ArcaneQuestTheme.shadows.glowCyan }}>
             Arcane Playmat
           </h2>
@@ -53,7 +53,7 @@ export const PlaymatCanvas = ({ activeCards, children }) => {
         </div>
 
         {/* The drop zones and cards */}
-        <div className="flex flex-col gap-4 bg-slate-900/40 p-6 rounded-xl border border-slate-800 backdrop-blur-md">
+        <div className="builder-playmat__slots flex flex-col gap-4 bg-slate-900/40 p-6 rounded-xl border border-slate-800 backdrop-blur-md">
           {children}
         </div>
       </div>

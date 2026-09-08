@@ -3,12 +3,19 @@ import { useStore } from 'zustand';
 import { createLearnerProfile, createMagePrefab, validateCardProgram } from '../engine/mageFirstProof';
 
 export const LEARNING_RUN_STORAGE_KEY = 'securedme.education.mage-first-proof.learning-run.v1';
+export const LEARNING_RUN_INDEX_KEY = 'securedme.education.mage-first-proof.active-run.v2';
 export const LEARNING_RUN_STAGES = Object.freeze(['Mission', 'Build', 'Check', 'Colab', 'Return', 'Reflect']);
 
-function safeLoad(storage) {
+function storageKey(runId) {
+  return `${LEARNING_RUN_STORAGE_KEY}:${runId}`;
+}
+
+function safeLoad(storage, runId = null) {
   if (!storage) return null;
   try {
-    const value = JSON.parse(storage.getItem(LEARNING_RUN_STORAGE_KEY) || 'null');
+    const selectedRun = runId || storage.getItem(LEARNING_RUN_INDEX_KEY);
+    const raw = selectedRun ? storage.getItem(storageKey(selectedRun)) : storage.getItem(LEARNING_RUN_STORAGE_KEY);
+    const value = JSON.parse(raw || 'null');
     return value && value.schema === 'securedme.education.learning-run-state.v1' ? value : null;
   } catch (_error) {
     return null;
@@ -16,7 +23,7 @@ function safeLoad(storage) {
 }
 
 function persist(storage, state) {
-  if (!storage) return;
+  if (!storage || !state.mission?.run_id) return;
   const visible = {
     schema: state.schema,
     mission: state.mission,
@@ -30,7 +37,8 @@ function persist(storage, state) {
     updated_at: new Date().toISOString(),
     hidden_telemetry_stored: false,
   };
-  storage.setItem(LEARNING_RUN_STORAGE_KEY, JSON.stringify(visible));
+  storage.setItem(storageKey(state.mission.run_id), JSON.stringify(visible));
+  storage.setItem(LEARNING_RUN_INDEX_KEY, state.mission.run_id);
 }
 
 function snapshot(state) {
@@ -60,7 +68,23 @@ export function createLearningRunStore({ storage = typeof window !== 'undefined'
 
   const store = createStore((set, get) => ({
     ...initial,
-    setMission: (mission) => set((state) => ({ ...state, mission, activeStage: 'Build' })),
+    setMission: (mission) => set((state) => {
+      if (state.mission?.run_id === mission?.run_id) return { ...state, mission };
+      const saved = mission?.run_id ? safeLoad(storage, mission.run_id) : null;
+      if (saved) return { ...state, ...saved, mission, past: [], future: [] };
+      return {
+        ...state,
+        mission,
+        cards: createMagePrefab(),
+        activeStage: 'Build',
+        artifactReceipt: null,
+        colabReceipt: null,
+        retry: { count: 0, last_reason: '', penalized: false },
+        broker: { status: 'idle', run_id: mission?.run_id || null, message: 'A separate forge draft is ready for this adventure.' },
+        past: [],
+        future: [],
+      };
+    }),
     setProfile: (profile) => set((state) => ({ ...state, profile: createLearnerProfile(profile) })),
     setCards: (cards) => set((state) => withHistory(state, { cards: [...cards], artifactReceipt: null, colabReceipt: null })),
     moveCard: (fromIndex, toIndex) => set((state) => {

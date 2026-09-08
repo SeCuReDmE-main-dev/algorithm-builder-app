@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+require('./loadSuiteEnv');
 const express = require('express');
 const path = require('path');
 const { Pool } = require('pg');
@@ -11,6 +12,7 @@ const {
   validateArtifactReceiptV2,
   validateExecutionPayload,
   validateMissionEnvelopeV2,
+  verifyExecutionReceiptV2,
 } = require('./contracts');
 const { notebookForRun } = require('./notebook');
 const { MemoryRunStore, PostgresRunStore } = require('./runStore');
@@ -220,7 +222,11 @@ function createApp(options = {}) {
     try {
       const run = await ownedRun(request, response);
       if (!run) return undefined;
-      return response.json({ run: safeRun(run) });
+      const receiptAuthentication = run.execution_receipt
+        ? verifyExecutionReceiptV2(run.execution_receipt, { run, signingKey })
+        : { valid: false, errors: ['execution-receipt-pending'] };
+      if (run.execution_receipt && !receiptAuthentication.valid) return response.status(500).json({ error: 'stored-receipt-authentication-failed' });
+      return response.json({ run: safeRun(run), receipt_authentication: { verified: receiptAuthentication.valid, errors: receiptAuthentication.errors } });
     } catch (error) { return next(error); }
   });
 

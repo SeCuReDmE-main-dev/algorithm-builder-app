@@ -2,9 +2,25 @@ importScripts('config.js');
 
 const CONFIG = globalThis.SECUREDME_EXTENSION_CONFIG || {};
 const SESSION_KEY = 'securedme.mage-first-proof.extension-session.v1';
+const GAME_CHANNELS_KEY = 'securedme.algoquest.game-channels.v1';
+const PINNED_CHANNEL_KEY = 'securedme.algoquest.pinned-game-channel.v1';
+const LAST_GAME_CHANNEL_KEY = 'securedme.algoquest.last-game-channel.v1';
+const GAME_COMMANDS_KEY = 'securedme.algoquest.game-command-outbox.v1';
 
 chrome.runtime.onInstalled.addListener(() => {
   chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(() => undefined);
+});
+
+chrome.tabs.onRemoved.addListener(async (tabId) => {
+  const current = await readGameChannels();
+  if (!current.channels[String(tabId)]) return;
+  const removed = current.channels[String(tabId)];
+  const channels = { ...current.channels };
+  delete channels[String(tabId)];
+  const pinned = current.pinned === tabId ? null : current.pinned;
+  const last = current.pinned === tabId ? disconnectedChannel(removed) : current.last;
+  await chrome.storage.local.set({ [GAME_CHANNELS_KEY]: channels, [PINNED_CHANNEL_KEY]: pinned, [LAST_GAME_CHANNEL_KEY]: last });
+  if (current.pinned === tabId) chrome.runtime.sendMessage({ type: 'GAME_CHANNEL_CHANGED', channel: last }).catch(() => undefined);
 });
 
 function randomBase64Url(bytes = 32) {
@@ -39,6 +55,87 @@ async function writeSession(patch) {
 function sanitizeSession(session) {
   const { accessToken, callbackCapability, ...visible } = session;
   return { ...visible, authenticated: Boolean(accessToken && session.expiresAt > Date.now()), callbackReady: Boolean(callbackCapability), rawIdentityStored: false };
+}
+
+function isAllowedAlgoQuestUrl(value) {
+  try {
+    const url = new URL(value);
+    const localDevelopment = url.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(url.hostname);
+    return localDevelopment || url.origin === 'https://algoquest.securedme.ca';
+  } catch {
+    return false;
+  }
+}
+
+function validProjection(projection) {
+  return Boolean(
+    projection
+    && projection.schema === 'securedme.education.algoquest.hero-sheet-projection.v1'
+    && projection.canonical_state_owner === 'algoquest'
+    && typeof projection.run_id === 'string'
+    && Number.isInteger(projection.revision)
+    && projection.raw_secret_stored === false
+    && projection.contains_identity === false
+  );
+}
+
+async function readGameChannels() {
+  const stored = await chrome.storage.local.get([GAME_CHANNELS_KEY, PINNED_CHANNEL_KEY, LAST_GAME_CHANNEL_KEY]);
+  return { channels: stored[GAME_CHANNELS_KEY] || {}, pinned: stored[PINNED_CHANNEL_KEY] || null, last: stored[LAST_GAME_CHANNEL_KEY] || null };
+}
+
+function disconnectedChannel(channel) {
+  if (!channel) return null;
+  return {
+    ...channel,
+    tab_id: null,
+    document_id: null,
+    connected: false,
+    closed_at: new Date().toISOString(),
+    projection: { ...channel.projection, connection: 'disconnected' },
+  };
+}
+
+async function readGameCommandOutbox() {
+  const stored = await chrome.storage.local.get(GAME_COMMANDS_KEY);
+  return stored[GAME_COMMANDS_KEY] || {};
+}
+
+async function writeGameCommandRecord(commandId, record) {
+  const current = await readGameCommandOutbox();
+  const next = { ...current, [commandId]: record };
+  const ordered = Object.entries(next).sort((left, right) => String(right[1].updated_at).localeCompare(String(left[1].updated_at))).slice(0, 50);
+  await chrome.storage.local.set({ [GAME_COMMANDS_KEY]: Object.fromEntries(ordered) });
+}
+
+async function storeGameProjection(sender, projection) {
+  if (!sender?.tab?.id || sender.frameId !== 0 || !isAllowedAlgoQuestUrl(sender.url) || !validProjection(projection)) throw new Error('Untrusted AlgoQuest projection rejected.');
+  const current = await readGameChannels();
+  const tabId = String(sender.tab.id);
+  const previous = current.channels[tabId];
+  if (previous?.projection?.run_id === projection.run_id && previous.projection.revision > projection.revision) return previous;
+  const channel = {
+    tab_id: sender.tab.id,
+    document_id: sender.documentId || null,
+    origin: new URL(sender.url).origin,
+    run_id: projection.run_id,
+    projection,
+    updated_at: new Date().toISOString(),
+  };
+  const channels = { ...current.channels, [tabId]: channel };
+  const pinned = current.pinned && channels[String(current.pinned)] ? current.pinned : sender.tab.id;
+  await chrome.storage.local.set({ [GAME_CHANNELS_KEY]: channels, [PINNED_CHANNEL_KEY]: pinned, [LAST_GAME_CHANNEL_KEY]: channel });
+  chrome.runtime.sendMessage({ type: 'GAME_CHANNEL_CHANGED', channel: pinned === sender.tab.id ? channel : null }).catch(() => undefined);
+  return channel;
+}
+
+async function activeGameChannel(includeDisconnected = false) {
+  const current = await readGameChannels();
+  if (current.pinned && current.channels[String(current.pinned)]) return current.channels[String(current.pinned)];
+  const tabs = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+  const active = tabs.find((tab) => current.channels[String(tab.id)]);
+  if (active) return current.channels[String(active.id)];
+  return includeDisconnected ? current.last : null;
 }
 
 function requireConfig() {
@@ -119,15 +216,87 @@ async function downloadJson(filename, value) {
   return sanitizeSession(await readSession());
 }
 
-async function sendEvidenceToAlgoQuest(type, receipt) {
-  const tabs = await chrome.tabs.query({ url: ['http://localhost/*', 'http://127.0.0.1/*', 'https://algoquest.securedme.ca/*'] });
-  await Promise.all(tabs.map((tab) => chrome.tabs.sendMessage(tab.id, { type, receipt }).catch(() => undefined)));
+async function sendEvidenceToAlgoQuest(type, receipt, brokerAuthenticated = false) {
+  const current = await readGameChannels();
+  const channel = Object.values(current.channels).find((candidate) => candidate.run_id === receipt.run_id);
+  if (!channel) throw new Error('The AlgoQuest run is not connected. The receipt remains stored in Builder.');
+  await chrome.tabs.sendMessage(channel.tab_id, { type, receipt, broker_authenticated: brokerAuthenticated });
 }
 
-async function handle(message) {
+async function handle(message, sender) {
   switch (message.type) {
-    case 'MISSION_AVAILABLE':
-      return sanitizeSession(await writeSession({ mission: message.mission, profile: message.profile, calmMessage: 'Mission received from AlgoQuest.' }));
+    case 'MISSION_AVAILABLE': {
+      if (!sender?.tab?.id || sender.frameId !== 0 || !isAllowedAlgoQuestUrl(sender.url)) throw new Error('Mission sender rejected.');
+      const session = await readSession();
+      const changedRun = session.mission?.run_id && session.mission.run_id !== message.mission?.run_id;
+      return sanitizeSession(await writeSession({
+        mission: message.mission,
+        profile: message.profile,
+        run: changedRun ? null : session.run,
+        callbackCapability: changedRun ? null : session.callbackCapability,
+        calmMessage: changedRun ? 'New AlgoQuest run received. A separate forge draft is ready.' : 'Mission received from AlgoQuest.',
+      }));
+    }
+    case 'GAME_STATE_SNAPSHOT':
+      return storeGameProjection(sender, message.projection);
+    case 'GET_ACTIVE_GAME_CHANNEL':
+      return activeGameChannel(true);
+    case 'SELECT_GAME_CHANNEL': {
+      const current = await readGameChannels();
+      const channel = current.channels[String(message.tab_id)];
+      if (!channel) throw new Error('The selected AlgoQuest tab is no longer connected.');
+      await chrome.storage.local.set({ [PINNED_CHANNEL_KEY]: channel.tab_id });
+      return channel;
+    }
+    case 'SELECT_ACTIVE_GAME_CHANNEL': {
+      const current = await readGameChannels();
+      const tabs = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+      const tab = tabs.find((candidate) => current.channels[String(candidate.id)]);
+      if (!tab) throw new Error('The active tab is not an AlgoQuest game board.');
+      const channel = current.channels[String(tab.id)];
+      await chrome.storage.local.set({ [PINNED_CHANNEL_KEY]: channel.tab_id });
+      chrome.runtime.sendMessage({ type: 'GAME_CHANNEL_CHANGED', channel }).catch(() => undefined);
+      return channel;
+    }
+    case 'GAME_COMMAND': {
+      const channel = await activeGameChannel();
+      if (!channel) throw new Error('Open AlgoQuest to continue this mission.');
+      const command = {
+        command_id: message.command?.command_id || crypto.randomUUID(),
+        type: message.command?.type,
+        payload: message.command?.payload || {},
+      };
+      if (!command.type || typeof command.command_id !== 'string') throw new Error('Invalid game command.');
+      const outbox = await readGameCommandOutbox();
+      const previous = outbox[command.command_id];
+      if (previous && (previous.run_id !== channel.run_id || JSON.stringify(previous.command) !== JSON.stringify(command))) throw new Error('Command identifier conflict.');
+      if (previous?.status === 'completed') return previous.response;
+      await writeGameCommandRecord(command.command_id, {
+        schema: 'securedme.education.algoquest.extension-game-command.v1',
+        run_id: channel.run_id,
+        tab_id: channel.tab_id,
+        command,
+        status: 'pending',
+        updated_at: new Date().toISOString(),
+        contains_identity: false,
+        raw_secret_stored: false,
+      });
+      const response = await chrome.tabs.sendMessage(channel.tab_id, { type: 'GAME_COMMAND', command });
+      if (!response?.ok) throw new Error(response?.error || 'AlgoQuest rejected the command.');
+      if (response.data?.projection) await storeGameProjection({ tab: { id: channel.tab_id }, frameId: 0, documentId: channel.document_id, url: channel.origin }, response.data.projection);
+      await writeGameCommandRecord(command.command_id, {
+        schema: 'securedme.education.algoquest.extension-game-command.v1',
+        run_id: channel.run_id,
+        tab_id: channel.tab_id,
+        command,
+        status: 'completed',
+        response: response.data,
+        updated_at: new Date().toISOString(),
+        contains_identity: false,
+        raw_secret_stored: false,
+      });
+      return response.data;
+    }
     case 'GET_RUNTIME_STATE':
       return sanitizeSession(await readSession());
     case 'AUTH_LOGIN':
@@ -149,7 +318,7 @@ async function handle(message) {
     case 'RUN_STATUS': {
       const payload = await brokerFetch(`/api/v1/runs/${encodeURIComponent(message.run_id)}`);
       const next = await writeSession({ run: payload.run, calmMessage: payload.run.execution_receipt ? 'Colab returned a verified receipt.' : 'Waiting calmly for Colab.' });
-      if (payload.run.execution_receipt) await sendEvidenceToAlgoQuest('COLAB_RECEIPT_AVAILABLE', payload.run.execution_receipt);
+      if (payload.run.execution_receipt && payload.receipt_authentication?.verified === true) await sendEvidenceToAlgoQuest('COLAB_RECEIPT_AVAILABLE', payload.run.execution_receipt, true);
       return sanitizeSession(next);
     }
     case 'RUN_RETRY': {
@@ -165,8 +334,8 @@ async function handle(message) {
   }
 }
 
-chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-  handle(message)
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  handle(message, sender)
     .then((data) => sendResponse({ ok: true, data }))
     .catch((error) => sendResponse({ ok: false, error: error.message, recovery: 'Your build remains saved. Retry when you are ready.' }));
   return true;

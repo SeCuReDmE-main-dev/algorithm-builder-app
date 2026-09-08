@@ -26,6 +26,11 @@ function safeEqual(left, right) {
   return leftBuffer.length === rightBuffer.length && crypto.timingSafeEqual(leftBuffer, rightBuffer);
 }
 
+function ownerBinding(run, signingKey) {
+  if (!run?.subject_ref || !signingKey) return '';
+  return `hmac-sha256:${crypto.createHmac('sha256', signingKey).update(`owner:${run.subject_ref}:${run.run_id}`).digest('hex')}`;
+}
+
 function validateMissionEnvelopeV2(mission, now = Date.now()) {
   const errors = [];
   if (!mission || typeof mission !== 'object' || Array.isArray(mission)) return { valid: false, errors: ['mission-not-object'] };
@@ -66,6 +71,8 @@ function buildExecutionReceiptV2({ run, payload, signingKey, timestamp = new Dat
     artifact_digest: run.artifact_digest,
     generated_code_digest: run.artifact.generated_code.digest,
     attempt_id: run.artifact.attempt_id,
+    broker_attempt: run.attempt,
+    owner_binding: ownerBinding(run, signingKey),
     execution_result: payload.execution_result,
     model_limit_response: String(payload.model_limit_response || '').trim(),
     tests: executionTests,
@@ -98,6 +105,24 @@ function validateExecutionPayload(payload, run) {
   return { valid: errors.length === 0, errors };
 }
 
+function verifyExecutionReceiptV2(receipt, { run, signingKey }) {
+  const errors = [];
+  if (!receipt || receipt.schema !== EXECUTION_SCHEMA_V2) return { valid: false, errors: ['schema-mismatch'] };
+  if (!run || receipt.run_id !== run.run_id || receipt.mission_id !== run.mission?.mission_id || receipt.prompt_assignment_id !== run.mission?.prompt_assignment_id) errors.push('run-binding-mismatch');
+  if (!run || receipt.adaptation_id !== run.mission?.adaptation_id || receipt.artifact_digest !== run.artifact_digest || receipt.generated_code_digest !== run.artifact?.generated_code?.digest) errors.push('assignment-binding-mismatch');
+  if (!run || receipt.attempt_id !== run.artifact?.attempt_id || receipt.broker_attempt !== run.attempt) errors.push('attempt-binding-mismatch');
+  const expectedOwnerBinding = ownerBinding(run, signingKey);
+  if (!expectedOwnerBinding || !safeEqual(receipt.owner_binding || '', expectedOwnerBinding)) errors.push('owner-binding-mismatch');
+  const body = { ...receipt };
+  delete body.receipt_digest;
+  delete body.server_attestation;
+  if (sha256Digest(body) !== receipt.receipt_digest) errors.push('receipt-digest-mismatch');
+  const signature = String(receipt.server_attestation?.signature || '').replace(/^hmac-sha256:/, '');
+  const expected = signingKey ? crypto.createHmac('sha256', signingKey).update(String(receipt.receipt_digest || '')).digest('hex') : '';
+  if (receipt.server_attestation?.alg !== 'HS256' || !signingKey || !signature || !safeEqual(signature, expected)) errors.push('receipt-signature-invalid');
+  return { valid: errors.length === 0, errors };
+}
+
 module.exports = {
   ARTIFACT_SCHEMA_V2,
   EXECUTION_SCHEMA_V2,
@@ -105,9 +130,11 @@ module.exports = {
   buildExecutionReceiptV2,
   canonicalJson,
   hashOpaque,
+  ownerBinding,
   safeEqual,
   sha256Digest,
   validateArtifactReceiptV2,
   validateExecutionPayload,
+  verifyExecutionReceiptV2,
   validateMissionEnvelopeV2,
 };

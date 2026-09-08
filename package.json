@@ -6,8 +6,9 @@
   "scripts": {
     "start": "node server/index.js",
     "dev": "nodemon server/index.js",
+    "env:check": "node scripts/environment-check.js",
     "build": "webpack --mode production && node scripts/build-extension.js",
-    "test": "node scripts/smoke-test.js && node scripts/mage-first-proof-test.js && node scripts/broker-test.js && node scripts/extension-static-test.js && node scripts/webmcp-static-test.js",
+    "test": "node scripts/smoke-test.js && node scripts/mage-first-proof-test.js && node scripts/broker-test.js && node scripts/receipt-authentication-test.js && node scripts/game-command-outbox-test.js && node scripts/extension-static-test.js && node scripts/extension-routing-test.js && node scripts/webmcp-static-test.js",
     "docker:build": "docker build -t algorithm-builder .",
     "docker:run": "docker run -p 3000:3000 algorithm-builder",
     "cpai:start": "powershell -NoProfile -ExecutionPolicy Bypass -File infra/codeproject-ai/start.ps1",
@@ -22,6 +23,7 @@
     "bcrypt": "^6.0.0",
     "clsx": "^2.1.1",
     "d3": "^7.0.0",
+    "dotenv": "17.2.2",
     "express": "^5.2.1",
     "express-oauth2-jwt-bearer": "^1.9.1",
     "framer-motion": "^13.1.0",
@@ -49,8 +51,11 @@
   },
   "overrides": {
     "brace-expansion": "5.0.9",
-    "fast-uri": "3.1.5",
-    "nanoid": "3.3.17",
+    "browserslist": "4.28.9",
+    "fast-uri": "3.1.6",
+    "nanoid": "3.3.18",
+    "postcss-selector-parser": "7.1.6",
+    "qs": "6.16.0",
     "socket.io-parser": "4.2.7"
   }
 }
