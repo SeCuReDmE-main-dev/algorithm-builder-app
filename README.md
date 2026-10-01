@@ -1,237 +1,71 @@
-# Algorithm Builder App
+# Algorithm Builder
 
-<!-- SECUREDME-ZENODO:START -->
-<p align="center">
-  <a href="https://doi.org/10.5281/zenodo.21893177"><img alt="Zenodo DOI: 10.5281/zenodo.21893177" src="https://img.shields.io/badge/Zenodo%20DOI-10.5281%2Fzenodo.21893177-1682D4?style=for-the-badge" /></a>
-</p>
-<!-- SECUREDME-ZENODO:END -->
+![Algorithm Builder — SecuredMe Education](docs/assets/repository/readme-banner-2026.png)
 
-## Mage First-Proof side panel
+[![License SEL-2.0](https://img.shields.io/badge/license-SEL--2.0-6F42FF)](LICENSE)
+[![Pre-alpha](https://img.shields.io/badge/status-pre--alpha-0E7490)](AGENTS.md)
+[![Issues](https://img.shields.io/github/issues/SeCuReDmE-main-dev/algorithm-builder-app)](https://github.com/SeCuReDmE-main-dev/algorithm-builder-app/issues)
+[![Main history](https://img.shields.io/github/last-commit/SeCuReDmE-main-dev/algorithm-builder-app/main)](https://github.com/SeCuReDmE-main-dev/algorithm-builder-app/commits/main/)
+[![SPONSORED BY E2B FOR STARTUPS](https://img.shields.io/badge/SPONSORED%20BY-E2B%20FOR%20STARTUPS-ff3001?style=for-the-badge&labelColor=black)](https://e2b.dev/startups)
 
-The first complete mechanism is a Chromium 114+ Manifest V3 side panel. AlgoQuest owns the mission and progression decision; the panel builds a deterministic typed card program; the authenticated broker admits the artifact and generates a run-bound notebook; Colab returns bounded execution evidence to AlgoQuest through the extension. The successful path does not require JSON copy/paste and the extension never reads the Colab DOM.
+Build deterministic typed card programs and inspect their execution artifacts.
 
-1. Configure Auth0, Postgres, the public HTTPS broker URL, and broker signing values using `.env.example` as the key list. Do not place real values in source control.
-2. Run `npm run build`. The unpacked extension is generated in `dist/extension`.
-3. Set `AUTH0_DOMAIN`, `AUTH0_CLIENT_ID`, `AUTH0_AUDIENCE`, and `BROKER_BASE_URL` while building the extension, then load `dist/extension` through Chromium's **Load unpacked** control.
-4. Run `npm test` for deterministic engine, digest, broker, local notebook parity, and MV3 permission checks.
+[Public surface](https://algorithm-builder.securedme.ca/) · [Tool documentation](https://securedme-main-dev.github.io/securedme-scholarium/en/tools/algorithm-builder/) · [Education hub](https://securedme.ca/product/education/)
 
-Authentication fails closed when Auth0 is absent. Tokens remain in `chrome.storage.session`; the broker stores only a one-way learner subject reference and the hash of the short-lived callback capability. An explicit JSON download/import remains the recovery path; local verification is labelled local evidence and never impersonates Colab evidence.
+**Status:** pre-alpha, active public development. Public pages and a successful local test do not establish a deployed school service. E2B sponsorship recognition is separate from runtime availability and included quota.
 
-<!-- SECUREDME-CPAI-MESH:START -->
-<p align="center">
-  <img alt="CodeProject.AI Server embedded mesh node" src="https://img.shields.io/badge/CodeProject.AI%20Server-Embedded%20Mesh%20Node-1F6FEB?style=for-the-badge" />
-  <img alt="YOLO real local inference validated" src="https://img.shields.io/badge/YOLO-Real%20Local%20Inference-16A34A?style=for-the-badge" />
-</p>
-<!-- SECUREDME-CPAI-MESH:END -->
+## How it works
 
-[Embedded CodeProject.AI node operations](infra/codeproject-ai/README.md)
+The browser builder and Manifest V3 side panel are specialist surfaces. The broker binds admitted artifacts to a mission; AlgoQuest retains progression authority.
 
-[![SecuredMe Education Suite public calendar](https://img.shields.io/badge/SecuredMe%20Education%20Suite-public%20calendar%20%7C%20pre--alpha%20%7C%20active%20public%20development-5484ED?style=for-the-badge&logo=googlecalendar&logoColor=white)](https://calendrier.securedme.ca)
+## Local development
 
-**Attribution:** Jean-Sebastien Beaulieu · [ORCID 0009-0007-2904-0443](https://orcid.org/0009-0007-2904-0443) · [SecuredMe](https://securedme.ca) · [Algorithm Builder](https://algorithm-builder.securedme.ca)
+Record the checkout and existing changes before editing:
 
-<!-- SECUREDME-SUITE-BADGES:START -->
-[![Issues](https://img.shields.io/github/issues/SeCuReDmE-main-dev/algorithm-builder-app?color=161B6A)](https://github.com/SeCuReDmE-main-dev/algorithm-builder-app/issues)
-[![Milestones](https://img.shields.io/badge/milestones-M0--M7-23B8FF)](https://github.com/SeCuReDmE-main-dev/algorithm-builder-app/milestones)
-[![Project Board](https://img.shields.io/badge/project-kanban-6F42FF)](https://github.com/users/SeCuReDmE-main-dev/projects/3)
-[![Branch](https://img.shields.io/badge/branch-main-0E7490)](https://github.com/SeCuReDmE-main-dev/algorithm-builder-app/tree/main)
-<!-- SECUREDME-SUITE-BADGES:END -->
-
-<!-- SECUREDME-STARTUP-SUPPORT:START -->
-<p align="center">
-  <a href="https://e2b.dev/startups">
-    <img alt="Gateway-ready E2B audit lane" src="https://img.shields.io/badge/Gateway--ready-E2B%20audit%20lane-FF8800?style=for-the-badge" />
-  </a>
-  <a href="https://www.datadoghq.com/partner/datadog-for-startups/">
-    <img alt="Gateway-ready Datadog observability" src="https://img.shields.io/badge/Gateway--ready-Datadog%20observability-632CA6?style=for-the-badge&amp;logo=datadog&amp;logoColor=white" />
-  </a>
-</p>
-
-> **Gateway support acknowledgement.** This SecuredMe school tool is gateway-compatible. E2B audit support and Datadog observability are routed through the shared SecuredMe gateway when that lane is configured; this repository does not claim a direct E2B or Datadog runtime dependency by default, and no E2B or Datadog secret is stored in this README.
-<!-- SECUREDME-STARTUP-SUPPORT:END -->
-
-> **Maintainer intake during active finishing week.** This repository is maintained directly on `main` by the SecuredMe maintainer. Public issues are open for bug reports, documentation corrections, security-safe observations, and reproducible feedback, but opening an issue does not promise a response or a delivery date. Pull requests are not accepted during the active code-finishing week; use issues only until this notice is replaced.
-
-
-
-
-## School Authentication And Secret Boundary
-This repository is a small SecuredMe school tool. Official classroom use must not require `.env` files, API keys, raw tokens, or local model secrets. Student and teacher workflows must use Codex/OpenAI or Antigravity/Gemini through browser WebAuth, fingerprinted session approval, and encrypted local session records when authentication is needed.
-
-The reason for excluding generic local AI routes from official school mode is student and teacher safety: education accounts, provider-side account controls, browser login, and governed AI refusal behavior are safer than unguided local model endpoints for classroom cybersecurity and algorithm-building tools.
-
-> **Development status.** This school tool is currently **pre-alpha — active public development**. Public issues remain open for intake, but no response or delivery date is promised. Pull requests are paused during active development.
-
-> **SecuredMe Education visual theme.** This pre-alpha school tool uses the shared SecuredMe Education open-source visual identity. See [assets/securedme/education](assets/securedme/education) for light/dark logo and thin banner assets.
-
-
-A sophisticated algorithm visualization and development tool.
-
-> **Official school governance.** Algorithm Builder App is for training students and teachers to build, inspect, and reason about algorithms safely. It is not a tool for theft, fraud, bypass, abuse, or criminal automation. The maintained classroom route supports Codex/OpenAI or Antigravity/Gemini only. See [SCHOOL_TOOL_GOVERNANCE.md](SCHOOL_TOOL_GOVERNANCE.md) and [AGENTS.md](AGENTS.md).
-
-> **License.** This project uses the Secured Educational License 2.0 (SEL-2.0). It is provided for education, research, simulation, classroom training, and supervised learning. Misuse, unsafe private forks, unsupported provider routes, and unsupervised authority claims are not maintained or endorsed by the official school version. See [LICENSE](LICENSE), [NOTICE](NOTICE), [DISCLAIMER](DISCLAIMER), and [SAFETY.md](SAFETY.md).
-
-## Current Status
-
-Algorithm Builder App is in **pre-alpha — active public development** as part of the SecuredMe Education suite. During the AlgoQuest Hero Books work, its role was narrowed and made testable:
-
-- AlgoQuest owns adventures, missions, prompt selection, evidence policy, Qbit boundaries, Tenebris boundaries, and progression.
-- Algorithm Builder acts as the forge: character sheet, deterministic die, inventory surface, algorithm construction surface, and artifact receipt producer.
-- Builder can validate a pasted `MissionEnvelope.v1` from AlgoQuest and emit an `AlgorithmArtifactReceipt.v1` back to AlgoQuest.
-- Builder must not select Hero Books prompts, unlock milestones, issue `KnowledgeToken`, decide mastery, diagnose a learner, or store hidden learner signals.
-- The MV3 service worker and broker-side Auth0/OIDC-PKCE bindings are implemented and covered by local contract tests. A public Auth0 tenant, HTTPS broker, PostgreSQL runtime, and live Chromium/Colab acceptance are still required before this can be described as a deployed school login. JSON download/import remains the recovery path, not the successful-path transport.
-
-The current proof is contract-level and local. It is not a school alpha claim.
-
-## Features
-
-- **Core Functionality**
-  - Interactive algorithm building interface
-  - LaTeX mathematical expression rendering
-  - Dynamic code generation
-  - Step-by-step execution debugging
-  - Real-time variable monitoring
-- **AlgoQuest Hero Books adapter**
-  - `BuilderCapabilityManifest.v1` with available, planned, disabled, and forbidden capabilities
-  - `MissionEnvelope.v1` import validation
-  - deterministic die and character sheet generation from mission context
-  - inventory references for the active adventure
-  - `AlgorithmArtifactReceipt.v1` with graph, tests, versions, capability refs, and digest
-  - local outbox for explicit return to AlgoQuest
-  - refusal of forbidden capabilities such as hidden learning diagnosis
-
-## AlgoQuest Hero Books Boundary
-
-Algorithm Builder is useful inside a Hero Book only when a mission needs a constructed artifact. It does not become mandatory for every AlgoQuest entry path.
-
-The intended chain is:
-
-```text
-AlgoQuest MissionEnvelope
--> Algorithm Builder construction and artifact receipt
--> optional Colab execution or verification
--> AlgoQuest receipt validation
--> versioned pedagogical rule
+```powershell
+git status --short --branch
+git rev-parse HEAD
 ```
 
-The adapter is documented in [docs/algoquest-hero-books-adapter.md](docs/algoquest-hero-books-adapter.md).
+In a clean development checkout, use the committed lockfile or package manifest. The commands below are setup instructions, not a claim that every dependency or optional service has been verified:
 
-Current local storage keys:
-
-| Key | Purpose |
-| --- | --- |
-| `securedme.education.algoquest.mission-envelope.inbox.v1` | imported AlgoQuest mission envelope inbox |
-| `securedme.education.algoquest.algorithm-artifact.outbox.v1` | Builder artifact receipts for explicit return to AlgoQuest |
-
-Current live blockers:
-
-- no deployed public Builder broker or completed live Auth0/Chromium/Colab acceptance yet
-- no provider key or secret allowed in browser storage
-- no hidden authority handoff from Builder to AlgoQuest
-- no real student, teacher, school, or minor workflow approved
-
-## Technical Stack
-
-- **Frontend**: HTML5, CSS3, JavaScript
-- **Mathematical Processing**: MathJax, mathjs
-- **Infrastructure**: Docker, Nginx
-- **Monitoring**: Prometheus, Grafana
-- **Database**: PostgreSQL
-- **Caching**: Redis
-
-## Docker Services
-
-- Web Application (Port 3000)
-- PostgreSQL Database
-- Redis Cache (Port 6379)
-- Nginx Reverse Proxy (Port 80)
-- Prometheus Metrics (Port 9090)
-- Grafana Dashboard (Port 3001)
-
-## Installation
-
-1. Install dependencies:
-```bash
-npm install
-```
-
-2. Run the local server:
-```bash
+```powershell
+npm ci
 npm start
 ```
 
-3. Build and test:
-```bash
-npm run build
-npm test
-```
+Run the relevant local checks from the repository root; the indicated `Set-Location` is needed only when starting from that root:
 
-4. Access the application at `http://localhost:3000`
-
-Docker support remains available for infrastructure experiments, but the current Hero Books adapter proof is validated by `npm test` and `npm run build`.
-
-## Usage
-
-1. **Mathematical Components**
-   - Use the math panel to input LaTeX expressions
-   - Leverage mathjs calculations for mathematical operations
-   - Visualize mathematical functions
-
-2. **Algorithm Building**
-   - Drag and drop components from the palette
-   - Connect components to create algorithms
-   - Generate executable code automatically
-
-3. **Debugging**
-   - Step through execution
-   - Monitor variable values
-   - Analyze algorithm performance
-
-4. **AlgoQuest Hero Books forge mode**
-   - Paste a `MissionEnvelope.v1` generated by AlgoQuest.
-   - Let Builder validate the mission boundaries and unavailable capabilities.
-   - Construct or inspect an algorithm artifact.
-   - Emit a JSON receipt for AlgoQuest.
-   - Keep mastery, tokens, milestones, and final pedagogical decisions inside AlgoQuest.
-
-5. **Neutrosophic Logic and Neutrosophic Linear Model**
-   - Define Neutrosophic Components (T, I, F)
-   - Implement Neutrosophic Logic Operations (negation, conjunction, disjunction, implication, equivalence)
-   - Apply Neutrosophic Logic to problem solving
-
-## Verification
-
-Run:
-
-```bash
+```powershell
 npm test
 npm run build
 ```
 
-`npm test` runs `scripts/smoke-test.js`, which currently verifies:
+## Source map
 
-- adapter strings and browser entry points
-- `BuilderCapabilityManifest.v1`
-- forbidden capability rejection
-- `MissionEnvelope.v1` acceptance/rejection
-- deterministic die and character sheet receipt context
-- `AlgorithmArtifactReceipt.v1` shape and digest
-- Docker health contract text
+- [src](src)
+- [server](server)
+- [scripts](scripts)
+- [.env.example](.env.example)
 
-The matching AlgoQuest side of the integration is validated in `algoquest-ams-discovry-labs-module-` by `npm test`, including Phase 7 prompt quality, browser gate, and pre-alpha gate.
+## Practice exercise
 
-## Contributing
+Build a small sorting or conditional program, run its deterministic checks, and explain why an invalid card connection is rejected.
 
-During the active code-finishing week, contribution intake is issue-only. Please open a public issue with a reproducible report, suggested documentation correction, or security-safe observation. Pull requests are not accepted during this window.
+During an individual course, learners choose suite tools to practice. The eight-week final project is the learner's own tool, submitted by the learner to an eligible hackathon after checking its age, AI, originality and licensing rules.
 
-## License
+## Boundaries and privacy
 
-This project is licensed under the Secured Educational License 2.0
-(SEL-2.0). See `LICENSE`, `NOTICE`, and `DISCLAIMER`.
+The MV3 path requires maintainer-configured authentication and broker services. Official school use never distributes raw provider tokens. Local evidence is distinct from Colab evidence.
 
+The official school routes are Codex/OpenAI and Antigravity/Gemini with human review. Never distribute raw tokens, learner data, prompts or private correspondence. No hidden learner analytics are added. Public analytics require explicit consent; general autocapture and session replay remain disabled. Optional local technical telemetry is separate from learner records and product audit history.
 
+See [AGENTS.md](AGENTS.md) and [SCHOOL_TOOL_GOVERNANCE.md](SCHOOL_TOOL_GOVERNANCE.md) for current authority and provider boundaries. Maintainer-authorized maintenance follows repository protections and required reviews. General contribution restrictions remain governed by [CONTRIBUTING.md](CONTRIBUTING.md).
 
+## License, authorship and history
 
+The repository's actual license is [SEL-2.0](LICENSE). Keep the license, attribution, notices and safety boundaries when reusing the code.
 
+Jean-Sebastien Beaulieu · [ORCID 0009-0007-2904-0443](https://orcid.org/0009-0007-2904-0443) · [SecuredMe](https://securedme.ca/)
 
-
+[README source before curation](docs/archive/README-before-curation-2026-09-30.txt) retains the exact previous text, implementation journals and attribution. It is historical: its old telemetry commands, readiness claims and contribution dates are not current operating instructions. [Presentation history](docs/repository-presentation-history-2026-09-30.md) retains previous badges. [GitHub social image](docs/assets/repository/github-social-preview-2026.jpg) accompanies this README.
